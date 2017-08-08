@@ -154,6 +154,7 @@
     </Compile>
     <Compile Include="Models\Wall.cs" />
     <Compile Include="Models\WallComing.cs" />
+    <Compile Include="Models\WallDetail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

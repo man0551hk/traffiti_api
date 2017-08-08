@@ -28,6 +28,10 @@ namespace Traffiti_Api.Controllers
             {
                 text = resmgr.GetString("hour_" + ConvertLangID(lang_id));
             }
+            else
+            {
+                text = dt.Year + "-" + dt.Month.ToString("00") + "-" + dt.Day.ToString("00") + " " + dt.Hour.ToString("00") + ":" + dt.Minute.ToString("00");
+            }
             return text;
         }
 
