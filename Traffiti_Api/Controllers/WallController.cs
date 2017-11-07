@@ -141,6 +141,8 @@ namespace Traffiti_Api.Controllers
                     wd.author_name = detailDr["author_name"].ToString();
                     wd.profile_pic = detailDr["profile_pic"].ToString();
                     wd.date_text = cc.CalculateDateTime(Convert.ToDateTime(detailDr["created_date"]), wc.lang_id);
+                    wd.fav_count = Convert.ToInt32(detailDr["fav_count"]);
+                    wd.like_count = Convert.ToInt32(detailDr["like_count"]);
                 }
                 detailDr.Close();
 

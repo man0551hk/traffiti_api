@@ -15,6 +15,7 @@ namespace Traffiti_Api.Models
         public string author_name { set; get; }
         public string profile_pic { set; get; }
         public string date_text { set; get; }
-
+        public int like_count { set; get; }
+        public int fav_count { set; get; }
     }
 }

@@ -69,3 +69,4 @@ C:\Traffiti_API\Traffiti_Api\obj\Debug\Traffiti_Api.csproj.GenerateResource.Cach
 \\Mac\Home\Documents\private_github\traffiti_api\Traffiti_Api\obj\Debug\Traffiti_Api.csproj.GenerateResource.Cache
 \\Mac\Home\Documents\private_github\traffiti_api\Traffiti_Api\obj\Debug\Traffiti_Api.dll
 \\Mac\Home\Documents\private_github\traffiti_api\Traffiti_Api\obj\Debug\Traffiti_Api.pdb
+\\Mac\Home\Documents\private_github\traffiti_api\Traffiti_Api\bin\Traffiti_Api.dll.config
