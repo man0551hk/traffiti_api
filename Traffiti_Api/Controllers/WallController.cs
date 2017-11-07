@@ -53,9 +53,10 @@ namespace Traffiti_Api.Controllers
                 int offset = (page.pageNum - 1) * pageSize;
                 cn.Open();
                 MySqlCommand cmd = new MySqlCommand(@"select s.wall_id, s.content, s.photo_path, s.author_id, a.author_name,  a.profile_pic, 
-                                                l.location_en as location, s.created_date
-                                                from wall_snap s, author a, location l
+                                                l.location_en as location, s.created_date, w.fav_count, w.like_count
+                                                from wall_snap s, author a, location l, wall w
                                                 where s.author_id = a.author_id and s.location_id = l.location_id
+                                                and s.wall_id = w.wall_id
                                                 order by s.created_date desc limit @pageSize offset @offset", cn);
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Add("@pageSize", MySqlDbType.Int32).Value = pageSize;
@@ -77,6 +78,8 @@ namespace Traffiti_Api.Controllers
                     w.profile_pic = dr["profile_pic"].ToString();
                     w.location = dr["location"].ToString();
                     w.date_text = cc.CalculateDateTime(Convert.ToDateTime(dr["created_date"]), page.lang_id);
+                    w.fav_count = Convert.ToInt32(dr["fav_count"]);
+                    w.like_count = Convert.ToInt32(dr["like_count"]);
                     wList.Add(w);
                 }
 
