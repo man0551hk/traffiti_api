@@ -15,5 +15,7 @@ namespace Traffiti_Api.Models
         public int google_id { set; get; }
         public string profile_pic { set; get; }
         public string access_key { set; get; }
+        public int fans { set; get; }
+        public int follows { set; get; }
     }
 }

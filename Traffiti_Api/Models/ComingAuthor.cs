@@ -7,7 +7,10 @@ namespace Traffiti_Api.Models
 {
     public class ComingAuthor
     {
-        public string author_login { set; get; }
-        public string author_password { set; get; }
+        public string authorLogin { set; get; }
+        public string authorPassword { set; get; }
+        public int facebookID { set; get; }
+        public int googleID { set; get; }
+        public string accessKey { set; get; }
     }
 }
