@@ -21,7 +21,7 @@ namespace Traffiti_Api.Controllers
             MySqlConnection cn = new MySqlConnection(ConfigurationManager.ConnectionStrings["sq_traffiti"].ConnectionString);
             try
             {
-                string sql = @"select author_id, author_name, email, created_date, facebook_id, google_id, profile_pic, access_key, fans, follows from author where ";
+                string sql = @"select author_id, author_name, email, created_date, facebook_id, google_id, profile_pic, cover_pic, access_key, fans, follows from author where ";
                 if (!string.IsNullOrEmpty(incomeAuthor.authorLogin) && !string.IsNullOrEmpty(incomeAuthor.authorPassword))
                 {
                     sql += "author_login = @login and author_password = @password";
@@ -73,6 +73,7 @@ namespace Traffiti_Api.Controllers
                     author.facebook_id = Convert.ToInt32(dr["facebook_id"]);
                     author.google_id = Convert.ToInt32(dr["google_id"]);
                     author.profile_pic = dr["profile_pic"].ToString();
+                    author.cover_pic = dr["cover_pic"].ToString();
                     author.access_key = dr["access_key"].ToString();
                     author.fans = Convert.ToInt32(dr["fans"]);
                     author.follows = Convert.ToInt32(dr["follows"]);
