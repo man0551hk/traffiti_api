@@ -243,5 +243,77 @@ namespace Traffiti_Api.Controllers
             return wdList;
         }
 
+        [HttpPost]
+        public void SaveTempPhoto(ComingTempPhoto tempPhoto)
+        {
+            MySqlConnection cn = new MySqlConnection(ConfigurationManager.ConnectionStrings["sq_traffiti"].ConnectionString);
+            try
+            {
+                cn.Open();
+                MySqlCommand cmd = new MySqlCommand("insert into temp_photo (author_id, photo_path) values (@author_id, @photo_path)", cn);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Add("@author_id", MySqlDbType.Int32).Value = tempPhoto.authorID;
+                cmd.Parameters.Add("@photo_path", MySqlDbType.VarChar).Value = tempPhoto.photoPath;
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            { }
+            finally
+            {
+                cn.Close();
+            }
+        }
+
+        [HttpPost]
+        public List<TempPhoto> GetTempPhoto(ComingTempPhoto tempPhoto)
+        {
+            List<TempPhoto> tempPhotoList = new List<TempPhoto>();
+            MySqlConnection cn = new MySqlConnection(ConfigurationManager.ConnectionStrings["sq_traffiti"].ConnectionString);
+            try
+            {
+                cn.Open();
+                MySqlCommand cmd = new MySqlCommand("select id, photo_path from temp_photo where author_id = @author_id", cn);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Add("@author_id", MySqlDbType.Int32).Value = tempPhoto.authorID;
+                MySqlDataAdapter ad = new MySqlDataAdapter(cmd);
+                DataSet ds = new DataSet();
+                ad.Fill(ds);
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                {
+                    TempPhoto tp = new TempPhoto();
+                    tp.id = Convert.ToInt32(dr["id"]);
+                    tp.photo_path = dr["photo_path"].ToString();
+                    tempPhotoList.Add(tp);
+                }
+            }
+            catch (Exception ex)
+            { }
+            finally
+            {
+                cn.Close();
+            }
+            return tempPhotoList;
+        }
+
+        [HttpPost]
+        public void DeleteTempPhoto(ComingTempPhoto tempPhoto)
+        {
+            List<TempPhoto> tempPhotoList = new List<TempPhoto>();
+            MySqlConnection cn = new MySqlConnection(ConfigurationManager.ConnectionStrings["sq_traffiti"].ConnectionString);
+            try
+            {
+                cn.Open();
+                MySqlCommand cmd = new MySqlCommand("delete from temp_photo where id = @id", cn);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = tempPhoto.id;
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            { }
+            finally
+            {
+                cn.Close();
+            }
+        }
     }
 }
