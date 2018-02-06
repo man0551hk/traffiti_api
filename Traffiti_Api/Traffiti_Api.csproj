@@ -155,6 +155,7 @@
     </Compile>
     <Compile Include="Models\Author.cs" />
     <Compile Include="Models\ComingAuthor.cs" />
+    <Compile Include="Models\ComingCreateWall.cs" />
     <Compile Include="Models\ComingTempPhoto.cs" />
     <Compile Include="Models\TempPhoto.cs" />
     <Compile Include="Models\Wall.cs" />

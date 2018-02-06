@@ -315,5 +315,127 @@ namespace Traffiti_Api.Controllers
                 cn.Close();
             }
         }
+
+        [HttpPost]
+        public int CreateWall(ComingCreateWall comingCreateWall)
+        {
+            MySqlConnection cn = new MySqlConnection(ConfigurationManager.ConnectionStrings["sq_traffiti"].ConnectionString);
+            int wall_id = 0;
+            int location_id = GetLocationID(comingCreateWall.location, comingCreateWall.lat, comingCreateWall.lon);
+            try
+            {
+                cn.Open();
+                MySqlCommand createWallCmd = new MySqlCommand(@"insert into wall (author_id, created_date, like_count, fav_count, view_count, location_id, lat, lon, first_section_id)
+                                                                values 
+                                                                (@author_id, NOW(), 0, 0, 0, @location_id, @lat, @lon, 0)", cn);
+                createWallCmd.CommandType = CommandType.Text;
+                createWallCmd.Parameters.Add("@author_id", MySqlDbType.Int32).Value = comingCreateWall.author_id;
+                createWallCmd.Parameters.Add("@location_id", MySqlDbType.Int32).Value = location_id;
+                createWallCmd.Parameters.Add("@lat", MySqlDbType.VarChar).Value = comingCreateWall.lat;
+                createWallCmd.Parameters.Add("@lon", MySqlDbType.VarChar).Value = comingCreateWall.lon;
+                createWallCmd.ExecuteNonQuery();
+                wall_id = Convert.ToInt32(createWallCmd.LastInsertedId);
+
+                int section_id = 0;
+                int photo_section_id = 0;
+                if( comingCreateWall.photoList.Count > 0)
+                {
+                    MySqlCommand createPhotoSection = new MySqlCommand(@"insert into photo_section (wall_id, display_order) values (@wall_id,1)", cn);
+                    createPhotoSection.CommandType = CommandType.Text;
+                    createPhotoSection.Parameters.Add("@wall_id", MySqlDbType.Int32).Value = wall_id;
+                    createPhotoSection.ExecuteNonQuery();
+                    photo_section_id = Convert.ToInt32(createPhotoSection.LastInsertedId);
+
+                    for (int i = 0; i < comingCreateWall.photoList.Count; i++)
+                    {
+                        MySqlCommand addPhotoCmd = new MySqlCommand(@"insert into photo (photo_path, caption, display_order, photo_section, is_default, wall_id)
+                                                                    values 
+                                                                    (@photo_path, '', @display_order, @photo_section_id, @is_default, @wall_id)", cn);
+                        addPhotoCmd.CommandType = CommandType.Text;
+                        addPhotoCmd.Parameters.Add("@photo_path", MySqlDbType.VarChar).Value = comingCreateWall.photoList[i];
+                        addPhotoCmd.Parameters.Add("@display_order", MySqlDbType.Int32).Value = i + 1;
+                        addPhotoCmd.Parameters.Add("@photo_section_id", MySqlDbType.Int32).Value = photo_section_id;
+                        addPhotoCmd.Parameters.Add("@is_default", MySqlDbType.Int32).Value = i == 0 ? 1 : 0;
+                        addPhotoCmd.Parameters.Add("@wall_id", MySqlDbType.Int32).Value = wall_id;
+                        addPhotoCmd.ExecuteNonQuery();
+                    }
+
+                }
+                MySqlCommand createSectionCmd = new MySqlCommand(@"insert into wall_section (content, photo_section_id, display_order, wall_id)
+                                                                    values 
+                                                                    (@content, @photo_section_id, 1, @wall_id", cn);
+                createSectionCmd.CommandType = CommandType.Text;
+                createSectionCmd.Parameters.Add("@content", MySqlDbType.Text).Value = comingCreateWall.message;
+                createSectionCmd.Parameters.Add("@photo_section_id", MySqlDbType.Int32).Value = photo_section_id;
+                createSectionCmd.Parameters.Add("@wall_id", MySqlDbType.Int32).Value = wall_id;
+                createSectionCmd.ExecuteNonQuery();
+                section_id = Convert.ToInt32(createSectionCmd.LastInsertedId);
+
+                MySqlCommand updateCmd = new MySqlCommand(@"update wall set first_section_id = @section_id where wall_id = @wall_id", cn);
+                updateCmd.Parameters.Add("@section_id", MySqlDbType.Int32).Value = section_id;
+                updateCmd.Parameters.Add("@wall_id", MySqlDbType.Int32).Value = wall_id;
+                updateCmd.ExecuteNonQuery();
+
+                MySqlCommand snapCmd = new MySqlCommand(@"insert into wall_snap (wall_id, content, photo_path, author_id, created_date, location_id)
+                                                        values
+                                                        (@wall_id, @content, @photo_path, @author_id, NOW(), @location_id)", cn);
+                snapCmd.CommandType = CommandType.Text;
+                snapCmd.Parameters.Add("@wall_id", MySqlDbType.Int32).Value = wall_id;
+                snapCmd.Parameters.Add("@content", MySqlDbType.VarChar).Value = comingCreateWall.message;
+                snapCmd.Parameters.Add("@photo_path", MySqlDbType.VarChar).Value = comingCreateWall.photoList.Count > 0 ? comingCreateWall.photoList[0] : "";
+                snapCmd.Parameters.Add("@author_id", MySqlDbType.Int32).Value = comingCreateWall.author_id;
+                snapCmd.Parameters.Add("@location_id", MySqlDbType.Int32).Value = location_id;
+                snapCmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            { }
+            finally
+            {
+                cn.Close();
+            }
+            //create wall
+            //create wall section , 1 for content, 1 for photosection
+
+            return wall_id;
+        }
+
+        private int GetLocationID(string location, string lat, string lon)
+        { 
+            MySqlConnection cn = new MySqlConnection(ConfigurationManager.ConnectionStrings["sq_traffiti"].ConnectionString);
+            int location_id = 0;
+            try
+            {
+                cn.Open();
+
+                MySqlCommand getLocationCmd = new MySqlCommand("select location_id from location where location_en = @location or location_tc = @location or location_sc - @location", cn);
+                getLocationCmd.CommandType = CommandType.Text;
+                getLocationCmd.Parameters.Add("@location", MySqlDbType.VarChar).Value = location;
+                MySqlDataReader getLocationDr = getLocationCmd.ExecuteReader();
+                if (getLocationDr.Read())
+                {
+                    location_id = Convert.ToInt32(getLocationDr["location_id"]);
+                }
+                getLocationDr.Close();
+
+                if (location_id == 0)
+                {
+                    MySqlCommand insertCmd = new MySqlCommand("insert into location (location_en, location_tc, location_sc, lat, lon) values (@location, @location, @location, @lat, @lon)", cn);
+                    insertCmd.CommandType = CommandType.Text;
+                    insertCmd.Parameters.Add("@location", MySqlDbType.VarChar).Value = location;
+                    insertCmd.Parameters.Add("@lat", MySqlDbType.VarChar).Value = lat;
+                    insertCmd.Parameters.Add("@lon", MySqlDbType.VarChar).Value = lon;
+                    insertCmd.ExecuteNonQuery();
+                    location_id = Convert.ToInt32(insertCmd.LastInsertedId);
+                }
+
+            }
+            catch (Exception ex)
+            { }
+            finally
+            {
+                cn.Close();
+            }
+            return location_id;
+        }
     }
 }
