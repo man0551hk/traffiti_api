@@ -317,7 +317,7 @@ namespace Traffiti_Api.Controllers
         }
 
         [HttpPost]
-        public int CreateWall(ComingCreateWall comingCreateWall)
+        public ComingCreateWall CreateWall(ComingCreateWall comingCreateWall)
         {
             MySqlConnection cn = new MySqlConnection(ConfigurationManager.ConnectionStrings["sq_traffiti"].ConnectionString);
             int wall_id = 0;
@@ -340,6 +340,7 @@ namespace Traffiti_Api.Controllers
                 int photo_section_id = 0;
                 if( comingCreateWall.photoList.Count > 0)
                 {
+                    comingCreateWall.publishList = new List<string>();
                     MySqlCommand createPhotoSection = new MySqlCommand(@"insert into photo_section (wall_id, display_order) values (@wall_id,1)", cn);
                     createPhotoSection.CommandType = CommandType.Text;
                     createPhotoSection.Parameters.Add("@wall_id", MySqlDbType.Int32).Value = wall_id;
@@ -358,6 +359,9 @@ namespace Traffiti_Api.Controllers
                         addPhotoCmd.Parameters.Add("@is_default", MySqlDbType.Int32).Value = i == 0 ? 1 : 0;
                         addPhotoCmd.Parameters.Add("@wall_id", MySqlDbType.Int32).Value = wall_id;
                         addPhotoCmd.ExecuteNonQuery();
+                        int photoID = Convert.ToInt32(addPhotoCmd.LastInsertedId);
+                        string photoExtension = System.IO.Path.GetExtension(comingCreateWall.photoList[i]).ToLower();
+                        comingCreateWall.publishList.Add(photoID + photoExtension);
                     }
 
                 }
@@ -395,8 +399,8 @@ namespace Traffiti_Api.Controllers
             }
             //create wall
             //create wall section , 1 for content, 1 for photosection
-
-            return wall_id;
+            comingCreateWall.wall_id = wall_id;
+            return comingCreateWall;
         }
 
         private int GetLocationID(string location, string lat, string lon)

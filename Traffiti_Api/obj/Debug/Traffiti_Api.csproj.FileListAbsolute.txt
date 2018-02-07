@@ -64,9 +64,9 @@ C:\Traffiti_API\Traffiti_Api\obj\Debug\Traffiti_Api.csproj.GenerateResource.Cach
 \\Mac\Home\Documents\private_github\traffiti_api\Traffiti_Api\bin\System.Web.Webpages.Razor.xml
 \\Mac\Home\Documents\private_github\traffiti_api\Traffiti_Api\bin\System.Web.Helpers.xml
 \\Mac\Home\Documents\private_github\traffiti_api\Traffiti_Api\bin\System.Web.Mvc.xml
-\\Mac\Home\Documents\private_github\traffiti_api\Traffiti_Api\obj\Debug\Traffiti_Api.csprojResolveAssemblyReference.cache
 \\Mac\Home\Documents\private_github\traffiti_api\Traffiti_Api\obj\Debug\Traffiti_Api.Controllers.Common.resources
 \\Mac\Home\Documents\private_github\traffiti_api\Traffiti_Api\obj\Debug\Traffiti_Api.csproj.GenerateResource.Cache
 \\Mac\Home\Documents\private_github\traffiti_api\Traffiti_Api\obj\Debug\Traffiti_Api.dll
 \\Mac\Home\Documents\private_github\traffiti_api\Traffiti_Api\obj\Debug\Traffiti_Api.pdb
 \\Mac\Home\Documents\private_github\traffiti_api\Traffiti_Api\bin\Traffiti_Api.dll.config
+\\Mac\Home\Documents\private_github\traffiti_api\Traffiti_Api\obj\Debug\Traffiti_Api.csprojResolveAssemblyReference.cache
