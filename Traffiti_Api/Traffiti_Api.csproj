@@ -140,10 +140,15 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_GlobalResources\CommonTest.Designer.cs">
+    <Compile Include="App_GlobalResources\Common.zh-cn.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>CommonTest.resx</DependentUpon>
+      <DependentUpon>Common.zh-cn.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\Common.zh-hk.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Common.zh-hk.resx</DependentUpon>
     </Compile>
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -153,6 +158,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Common.resx</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\WallController.cs" />
@@ -189,13 +195,16 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Common.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="App_GlobalResources\CommonTest.resx">
+    <Content Include="App_GlobalResources\Common.zh-hk.resx">
       <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>CommonTest.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+      <LastGenOutput>Common.zh-hk.designer.cs</LastGenOutput>
+    </Content>
+    <Content Include="App_GlobalResources\Common.zh-cn.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>Common.zh-cn.designer.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

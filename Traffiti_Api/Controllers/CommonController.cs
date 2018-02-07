@@ -7,12 +7,13 @@ using System.Web.Http;
 using System.Reflection;
 using System.Resources;
 using System.Globalization;
+using System.Web;
 
 namespace Traffiti_Api.Controllers
 {
     public class CommonController : ApiController
     {
-        ResourceManager resmgr = new ResourceManager("Common.Resource", Assembly.GetExecutingAssembly());
+        //ResourceManager resmgr = new ResourceManager("Common.Resource", Assembly.GetExecutingAssembly());
 
         public string CalculateDateTime(DateTime dt, int lang_id)
         {
@@ -22,11 +23,11 @@ namespace Traffiti_Api.Controllers
             ts = DateTime.Now - dt;
             if (ts.TotalMinutes < 10)
             {
-                text = resmgr.GetString("recently_" + ConvertLangID(lang_id));
+                text = (string)HttpContext.GetGlobalResourceObject("Common", "recently");
             }
             else if (ts.TotalHours < 2)
             {
-                text = resmgr.GetString("hour_" + ConvertLangID(lang_id));
+                text = (string)HttpContext.GetGlobalResourceObject("Common", "hour");
             }
             else
             {

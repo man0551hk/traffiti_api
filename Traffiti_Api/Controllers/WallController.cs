@@ -342,6 +342,7 @@ namespace Traffiti_Api.Controllers
 
                 int section_id = 0;
                 int photo_section_id = 0;
+                string firstPath = "";
                 if( comingCreateWall.photoList.Count > 0)
                 {
                     comingCreateWall.publishList = new List<string>();
@@ -372,6 +373,10 @@ namespace Traffiti_Api.Controllers
                         updPhotoCmd.Parameters.Add("@photoID", MySqlDbType.Int32).Value = photoID;
                         updPhotoCmd.Parameters.Add("@photoPath", MySqlDbType.VarChar).Value = "https://s3-ap-southeast-1.amazonaws.com/traffiti/client_upload/" + comingCreateWall.author_id + "/" +photoID + photoExtension;
                         updPhotoCmd.ExecuteNonQuery();
+                        if (i == 0)
+                        {
+                            firstPath = "https://s3-ap-southeast-1.amazonaws.com/traffiti/client_upload/" + comingCreateWall.author_id + "/" + photoID + photoExtension;
+                        }
                     }
 
                 }
@@ -396,7 +401,7 @@ namespace Traffiti_Api.Controllers
                 snapCmd.CommandType = CommandType.Text;
                 snapCmd.Parameters.Add("@wall_id", MySqlDbType.Int32).Value = wall_id;
                 snapCmd.Parameters.Add("@content", MySqlDbType.VarChar).Value = comingCreateWall.message;
-                snapCmd.Parameters.Add("@photo_path", MySqlDbType.VarChar).Value = comingCreateWall.photoList.Count > 0 ? comingCreateWall.photoList[0] : "";
+                snapCmd.Parameters.Add("@photo_path", MySqlDbType.VarChar).Value = firstPath;
                 snapCmd.Parameters.Add("@author_id", MySqlDbType.Int32).Value = comingCreateWall.author_id;
                 snapCmd.Parameters.Add("@location_id", MySqlDbType.Int32).Value = location_id;
                 snapCmd.ExecuteNonQuery();
