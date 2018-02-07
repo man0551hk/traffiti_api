@@ -12,7 +12,7 @@ namespace Traffiti_Api.Controllers
 {
     public class CommonController : ApiController
     {
-        ResourceManager resmgr = new ResourceManager("Traffiti.Resource", Assembly.GetExecutingAssembly());
+        ResourceManager resmgr = new ResourceManager("Common.Resource", Assembly.GetExecutingAssembly());
 
         public string CalculateDateTime(DateTime dt, int lang_id)
         {

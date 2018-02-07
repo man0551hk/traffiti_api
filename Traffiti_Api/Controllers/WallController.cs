@@ -44,6 +44,7 @@ namespace Traffiti_Api.Controllers
         [HttpPost]
         public List<Wall> GetWall(WallComing page)
         {
+            HttpStatusCode responseCode = HttpStatusCode.OK;
             CommonController cc = new CommonController();
             List<Wall> wList = new List<Wall>();
              MySqlConnection cn = new MySqlConnection(ConfigurationManager.ConnectionStrings["sq_traffiti"].ConnectionString);
@@ -85,7 +86,10 @@ namespace Traffiti_Api.Controllers
 
             }
             catch (Exception ex)
-            { }
+            {
+                responseCode = HttpStatusCode.InternalServerError;
+                ErrorHandling(responseCode, 1, ex.Message);
+            }
             finally
             {
                 cn.Close();
@@ -351,9 +355,9 @@ namespace Traffiti_Api.Controllers
                     {
                         MySqlCommand addPhotoCmd = new MySqlCommand(@"insert into photo (photo_path, caption, display_order, photo_section, is_default, wall_id)
                                                                     values 
-                                                                    (@photo_path, '', @display_order, @photo_section_id, @is_default, @wall_id)", cn);
+                                                                    ('', '', @display_order, @photo_section_id, @is_default, @wall_id)", cn);
                         addPhotoCmd.CommandType = CommandType.Text;
-                        addPhotoCmd.Parameters.Add("@photo_path", MySqlDbType.VarChar).Value = comingCreateWall.photoList[i];
+                        addPhotoCmd.Parameters.Add("@photo_path", MySqlDbType.VarChar).Value = "";
                         addPhotoCmd.Parameters.Add("@display_order", MySqlDbType.Int32).Value = i + 1;
                         addPhotoCmd.Parameters.Add("@photo_section_id", MySqlDbType.Int32).Value = photo_section_id;
                         addPhotoCmd.Parameters.Add("@is_default", MySqlDbType.Int32).Value = i == 0 ? 1 : 0;
@@ -362,12 +366,18 @@ namespace Traffiti_Api.Controllers
                         int photoID = Convert.ToInt32(addPhotoCmd.LastInsertedId);
                         string photoExtension = System.IO.Path.GetExtension(comingCreateWall.photoList[i]).ToLower();
                         comingCreateWall.publishList.Add(photoID + photoExtension);
+
+                        MySqlCommand updPhotoCmd = new MySqlCommand("update photo set photo_path = @photoPath where photo_id = @photoID", cn);
+                        updPhotoCmd.CommandType = CommandType.Text;
+                        updPhotoCmd.Parameters.Add("@photoID", MySqlDbType.Int32).Value = photoID;
+                        updPhotoCmd.Parameters.Add("@photoPath", MySqlDbType.VarChar).Value = "https://s3-ap-southeast-1.amazonaws.com/traffiti/client_upload/" + comingCreateWall.author_id + "/" +photoID + photoExtension;
+                        updPhotoCmd.ExecuteNonQuery();
                     }
 
                 }
                 MySqlCommand createSectionCmd = new MySqlCommand(@"insert into wall_section (content, photo_section_id, display_order, wall_id)
                                                                     values 
-                                                                    (@content, @photo_section_id, 1, @wall_id", cn);
+                                                                    (@content, @photo_section_id, 1, @wall_id)", cn);
                 createSectionCmd.CommandType = CommandType.Text;
                 createSectionCmd.Parameters.Add("@content", MySqlDbType.Text).Value = comingCreateWall.message;
                 createSectionCmd.Parameters.Add("@photo_section_id", MySqlDbType.Int32).Value = photo_section_id;
@@ -390,6 +400,11 @@ namespace Traffiti_Api.Controllers
                 snapCmd.Parameters.Add("@author_id", MySqlDbType.Int32).Value = comingCreateWall.author_id;
                 snapCmd.Parameters.Add("@location_id", MySqlDbType.Int32).Value = location_id;
                 snapCmd.ExecuteNonQuery();
+
+                MySqlCommand delTempCmd = new MySqlCommand("delete from temp_photo where author_id = @author_id", cn);
+                delTempCmd.CommandType = CommandType.Text;
+                delTempCmd.Parameters.Add("@author_id", MySqlDbType.Int32).Value = comingCreateWall.author_id;
+                delTempCmd.ExecuteNonQuery();
             }
             catch (Exception ex)
             { }
@@ -440,6 +455,20 @@ namespace Traffiti_Api.Controllers
                 cn.Close();
             }
             return location_id;
+        }
+
+        private void ErrorHandling(HttpStatusCode responseCode, int errorCode, string errorMessage)
+        {
+            RWMemberSuccess result = new RWMemberSuccess();
+            result.code = errorCode;
+            result.message = errorMessage;
+            throw new HttpResponseException(Request.CreateResponse(responseCode, result, new System.Net.Http.Headers.MediaTypeHeaderValue("application/json")));
+        }
+
+        public class RWMemberSuccess
+        {
+            public int code { set; get; }
+            public string message { set; get; }
         }
     }
 }
