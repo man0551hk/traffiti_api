@@ -423,6 +423,39 @@ namespace Traffiti_Api.Controllers
             return comingCreateWall;
         }
 
+        [HttpPost]
+        public string AddLike(WallComing comingWall)
+        {
+            string like_count = "";
+            MySqlConnection cn = new MySqlConnection(ConfigurationManager.ConnectionStrings["sq_traffiti"].ConnectionString);
+            try
+            {
+                cn.Open();
+                MySqlCommand cmd = new MySqlCommand("update wall set like_count = like_count+1 where wall_id = @wall_id", cn);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Add("@wall_id", MySqlDbType.Int32).Value = comingWall.wall_id;
+                cmd.ExecuteNonQuery();
+
+                MySqlCommand likeCmd = new MySqlCommand("select like_count from wall where wall_id = @wall_id", cn);
+                likeCmd.CommandType = CommandType.Text;
+                likeCmd.Parameters.Add("@wall_id", MySqlDbType.Int32).Value = comingWall.wall_id;
+                MySqlDataReader likeDr = likeCmd.ExecuteReader();
+                if (likeDr.Read())
+                {
+                    like_count = likeDr["like_count"].ToString();
+                }
+                likeDr.Close();
+            }
+            catch (Exception ex)
+            { }
+            finally
+            {
+                cn.Close();
+            }
+            return like_count;
+        }
+
+
         private int GetLocationID(string location, string lat, string lon)
         { 
             MySqlConnection cn = new MySqlConnection(ConfigurationManager.ConnectionStrings["sq_traffiti"].ConnectionString);
